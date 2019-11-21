@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000000; }
+  </style>
+</head>
+<body>
+  <script>
+    var player;
+    var isPlaying = false;
+    var updateTimerHandle = undefined;
+    var eventsSubscribed = false;
+
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '{{app_id}}',
+        xfbml      : true,
+        version    : 'v3.2'
+      });
+
+      function updateTime() {
+        if (isPlaying) {
+          time = player.getCurrentPosition()
+          webkit.messageHandlers.currentTimeUpdated.postMessage(time)
+        }
+      }
+
+      function setup(player, msg) {
+        webkit.messageHandlers.onReady.postMessage(msg.type);
+
+        if (updateTimerHandle) {
+          clearInterval(updateTimerHandle);
+        }
+        updateTimerHandle = window.setInterval(updateTime, 500);
+
+        player.subscribe('startedPlaying', function(e) {
+          isPlaying = true;
+          webkit.messageHandlers.startedPlaying.postMessage('');
+        });
+
+        player.subscribe('paused', function(e) {
+          isPlaying = false;
+          webkit.messageHandlers.paused.postMessage('');
+        });
+
+        player.subscribe('finishedPlaying', function(e) {
+          isPlaying = false
+          webkit.messageHandlers.finishedPlaying.postMessage('');
+        });
+
+        player.subscribe('startedBuffering', function(e) {
+          webkit.messageHandlers.startedBuffering.postMessage('');
+        });
+
+        player.subscribe('finishedBuffering', function(e) {
+          webkit.messageHandlers.finishedBuffering.postMessage('');
+        });
+
+        player.subscribe('error', function(e) {
+          isPlaying = false
+          webkit.messageHandlers.error.postMessage(e.msg);
+        });
+      }
+
+      FB.Event.subscribe('xfbml.ready', function(msg) {
+        if (msg.type === 'video') {
+          player = msg.instance;
+        }
+
+        setup(player, msg);
+      });
+    };
+  </script>
+  <div id="fb-root"></div>
+  <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+  <div class="fb-video" {{attributes}}></div>
+</body>
+</html>
