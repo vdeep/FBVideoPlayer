@@ -25,10 +25,14 @@ open class FBVideoPlayer: WKWebView {
 
     static private var defaultConfiguration: WKWebViewConfiguration {
         let config = WKWebViewConfiguration()
-        config.allowsAirPlayForMediaPlayback = true
+        if #available(iOS 9.0, *) {
+            config.allowsAirPlayForMediaPlayback = true
+            config.allowsPictureInPictureMediaPlayback = true
+        }
+        if #available(iOS 10.0, *) {
+            config.mediaTypesRequiringUserActionForPlayback = []
+        }
         config.allowsInlineMediaPlayback = true
-        config.allowsPictureInPictureMediaPlayback = true
-        config.mediaTypesRequiringUserActionForPlayback = .audio
         return config
     }
 

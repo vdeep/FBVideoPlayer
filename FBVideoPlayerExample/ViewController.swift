@@ -16,8 +16,8 @@ class ViewController: UIViewController {
 
         let player = FBVideoPlayer(
             frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 300),
-            appID: "your_app_id",
-            href: "https://www.facebook.com/facebook/videos/10153231379946729/",
+            appID: "1621582677958931",
+            href: "https://www.facebook.com/punjabkesariyum/videos/759693904532359",
             options: [
                 .allowFullscreen(fullscreen: true),
                 .autoplay(autoplay: true),
